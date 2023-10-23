@@ -15,7 +15,7 @@ class ViewController: UIViewController, UIToolbarDelegate, UITextViewDelegate {
 
     private let manager = UndoManager()
 
-    private let formatters: [HtmlConverter] = [
+    private let formatters: [NodeConverter] = [
         BoldItalicConverter(),
         UnderlineConverter(),
         StrikethroughConverter(),

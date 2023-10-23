@@ -8,11 +8,9 @@
 import Foundation
 
 public struct TextNode: Node {
-    public let tag: Tag
     public let content: String
 
-    public init(tag: Tag, content: String) {
-        self.tag = tag
+    public init(content: String) {
         self.content = content
     }
 }

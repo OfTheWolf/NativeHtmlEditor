@@ -7,14 +7,14 @@
 
 import UIKit
 
-public struct StrikethroughConverter: HtmlConverter {
+public struct StrikethroughConverter: NodeConverter {
     public init() {}
 
-    public func convert(occurence: String, attributes: [NSAttributedString.Key : Any], range: NSRange) -> String {
-        var retString = occurence
+    public func convert(current: Node, attributes: [NSAttributedString.Key : Any], range: NSRange) -> Node {
         if let style = attributes[.strikethroughStyle] as? Int, style == NSUnderlineStyle.single.rawValue {
-            retString = "<s>" + retString + "</s>"
+            return ElementNode(tag: .s, children: [current])
+        } else {
+            return current
         }
-        return retString
     }
 }

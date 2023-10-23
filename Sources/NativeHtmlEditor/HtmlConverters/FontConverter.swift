@@ -7,11 +7,10 @@
 
 import Foundation
 
-public struct FontConverter: HtmlConverter {
+public struct FontConverter: NodeConverter {
     public init() {}
 
-    public func convert(occurence: String, attributes: [NSAttributedString.Key : Any], range: NSRange) -> String {
-        let retString = occurence
-        return retString
+    public func convert(current: Node, attributes: [NSAttributedString.Key : Any], range: NSRange) -> Node {
+        return current
     }
 }

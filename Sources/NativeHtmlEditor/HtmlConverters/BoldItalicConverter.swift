@@ -7,20 +7,22 @@
 
 import UIKit
 
-public struct BoldItalicConverter: HtmlConverter {
+public struct BoldItalicConverter: NodeConverter {
     public init() {}
-    
-    public func convert(occurence: String, attributes: [NSAttributedString.Key : Any], range: NSRange) -> String {
-        var retString = occurence
+
+
+    public func convert(current: Node, attributes: [NSAttributedString.Key : Any], range: NSRange) -> Node {
         let font = attributes[.font] as! UIFont
         let isBold = font.fontDescriptor.symbolicTraits.contains(.traitBold)
         let isItalic = font.fontDescriptor.symbolicTraits.contains(.traitItalic)
+
+        var child = current
         if isBold {
-            retString = "<strong>" + retString + "</strong>"
+            child = ElementNode(tag: .strong, children: [child])
         }
         if isItalic {
-            retString = "<em>" + retString + "</em>"
+            child = ElementNode(tag: .em, children: [child])
         }
-        return retString
+        return child
     }
 }

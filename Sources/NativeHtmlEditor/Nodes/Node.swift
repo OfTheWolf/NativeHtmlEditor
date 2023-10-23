@@ -8,6 +8,5 @@
 import Foundation
 
 public protocol Node {
-    var tag: Tag { get }
     var content: String { get }
 }

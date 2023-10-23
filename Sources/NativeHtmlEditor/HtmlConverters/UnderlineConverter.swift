@@ -7,13 +7,14 @@
 
 import UIKit
 
-public struct UnderlineConverter: HtmlConverter {
+public struct UnderlineConverter: NodeConverter {
     public init() {}
-    public func convert(occurence: String, attributes: [NSAttributedString.Key : Any], range: NSRange) -> String {
-        var retString = occurence
+
+    public func convert(current: Node, attributes: [NSAttributedString.Key : Any], range: NSRange) -> Node {
         if let style = attributes[.underlineStyle] as? Int, style == NSUnderlineStyle.single.rawValue {
-            retString = "<u>" + retString + "</u>"
+            return ElementNode(tag: .u, children: [current])
+        } else {
+            return current
         }
-        return retString
     }
 }
