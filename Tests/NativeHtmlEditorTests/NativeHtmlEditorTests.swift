@@ -6,6 +6,6 @@ final class NativeHtmlEditorTests: XCTestCase {
         // This is an example of a functional test case.
         // Use XCTAssert and related functions to verify your tests produce the correct
         // results.
-        XCTAssertEqual(Node(tag: .p, children: [TextNode(tag: .p, content: "hello")]).content, "<p>hello</p>")
+        XCTAssertEqual(ElementNode(tag: .p, children: [TextNode(content: "hello")]).content, "<p>hello</p>")
     }
 }
