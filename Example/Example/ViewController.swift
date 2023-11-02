@@ -13,8 +13,6 @@ class ViewController: UIViewController, UIToolbarDelegate, UITextViewDelegate {
     @IBOutlet weak var textView: UITextView!
     @IBOutlet weak var resultTextView: UITextView!
 
-    private let manager = UndoManager()
-
     private let formatters: [NodeConverter] = [
         BoldItalicConverter(),
         UnderlineConverter(),
@@ -30,21 +28,30 @@ class ViewController: UIViewController, UIToolbarDelegate, UITextViewDelegate {
         navigationItem.rightBarButtonItem = .init(systemItem: .refresh, primaryAction: .init(handler: { _ in
             self.textView.attributedText = Mock.sample1.attributedString
         }))
+        updateUndoRedoButtons()
     }
+
+    private lazy var undoButton: UIBarButtonItem = {
+        UIBarButtonItem(image: UIImage(systemName: "arrow.uturn.left"), primaryAction: self.undoAction)
+    }()
+
+    private lazy var redoButton: UIBarButtonItem = {
+        UIBarButtonItem(image: UIImage(systemName: "arrow.uturn.right"), primaryAction: self.redoAction)
+    }()
 
     private func makeToolbar() -> UIToolbar {
         let toolbar = UIToolbar()
         toolbar.items = [
-            UIBarButtonItem(image: UIImage(systemName: "text.alignleft"), primaryAction: leftAlignAction),
-            UIBarButtonItem(image: UIImage(systemName: "text.aligncenter"), primaryAction: centerAlignAction),
-            UIBarButtonItem(image: UIImage(systemName: "text.alignright"), primaryAction: rightAlignAction),
-            UIBarButtonItem(image: UIImage(systemName: "text.justify"), primaryAction: justifyAction),
+//            UIBarButtonItem(image: UIImage(systemName: "text.alignleft"), primaryAction: leftAlignAction),
+//            UIBarButtonItem(image: UIImage(systemName: "text.aligncenter"), primaryAction: centerAlignAction),
+//            UIBarButtonItem(image: UIImage(systemName: "text.alignright"), primaryAction: rightAlignAction),
+//            UIBarButtonItem(image: UIImage(systemName: "text.justify"), primaryAction: justifyAction),
             UIBarButtonItem(image: UIImage(systemName: "bold"), primaryAction: boldAction),
             UIBarButtonItem(image: UIImage(systemName: "italic"), primaryAction: italicAction),
             UIBarButtonItem(image: UIImage(systemName: "underline"), primaryAction: underlineAction),
             UIBarButtonItem(image: UIImage(systemName: "strikethrough"), primaryAction: strikeThroughAction),
-            UIBarButtonItem(image: UIImage(systemName: "increase.indent"), primaryAction: increaseIndentAction),
-            UIBarButtonItem(image: UIImage(systemName: "decrease.indent"), primaryAction: deccreaseIndentAction),
+            undoButton,
+            redoButton,
             .flexibleSpace(),
             UIBarButtonItem(systemItem: .done, primaryAction: doneAction)
         ]
@@ -52,12 +59,14 @@ class ViewController: UIViewController, UIToolbarDelegate, UITextViewDelegate {
         return toolbar
     }
 
-    private lazy var increaseIndentAction: UIAction = UIAction { _ in
-
+    private lazy var undoAction: UIAction = UIAction { _ in
+        self.textView.undoManager?.undo()
+        self.updateUndoRedoButtons()
     }
 
-    private lazy var deccreaseIndentAction: UIAction = UIAction { _ in
-
+    private lazy var redoAction: UIAction = UIAction { _ in
+        self.textView.undoManager?.redo()
+        self.updateUndoRedoButtons()
     }
 
     private lazy var leftAlignAction: UIAction = UIAction { _ in
@@ -77,19 +86,45 @@ class ViewController: UIViewController, UIToolbarDelegate, UITextViewDelegate {
     }
 
     private lazy var boldAction: UIAction = UIAction { _ in
-        self.textView.toggle(trait: .traitBold)
+        let selectedRange = self.textView.selectedRange
+        self.textView.toggle(trait: .traitBold, selectedRange: selectedRange)
+        self.textView.undoManager?.registerUndo(withTarget: self, handler: { _ in
+            self.textView.selectedRange = selectedRange
+            self.textView.toggle(trait: .traitBold, selectedRange: selectedRange)
+        })
+        self.updateUndoRedoButtons()
     }
 
     private lazy var italicAction: UIAction = UIAction { _ in
-        self.textView.toggle(trait: .traitItalic)
+        let selectedRange = self.textView.selectedRange
+        self.textView.toggle(trait: .traitItalic, selectedRange: selectedRange)
+        self.textView.undoManager?.registerUndo(withTarget: self, handler: { _ in
+            self.textView.selectedRange = selectedRange
+            self.textView.toggle(trait: .traitItalic, selectedRange: selectedRange)
+        })
+        self.updateUndoRedoButtons()
     }
 
     private lazy var underlineAction: UIAction = UIAction { _ in
-        self.textView.toggle(format: UnderlineFormat(), manager: self.manager)
+        let selectedRange = self.textView.selectedRange
+        let format = UnderlineFormat()
+        self.textView.toggle(format: format, selectedRange: selectedRange)
+        self.textView.undoManager?.registerUndo(withTarget: self, handler: { _ in
+            self.textView.selectedRange = selectedRange
+            self.textView.toggle(format: format, selectedRange: selectedRange)
+        })
+        self.updateUndoRedoButtons()
     }
 
     private lazy var strikeThroughAction: UIAction = UIAction { _ in
-        self.textView.toggle(format: StrikethroughFormat(), manager: self.manager)
+        let selectedRange = self.textView.selectedRange
+        let format = StrikethroughFormat()
+        self.textView.toggle(format: format, selectedRange: selectedRange)
+        self.textView.undoManager?.registerUndo(withTarget: self, handler: { _ in
+            self.textView.selectedRange = selectedRange
+            self.textView.toggle(format: format, selectedRange: selectedRange)
+        })
+        self.updateUndoRedoButtons()
     }
 
     private lazy var doneAction: UIAction = UIAction { _ in
@@ -104,4 +139,12 @@ class ViewController: UIViewController, UIToolbarDelegate, UITextViewDelegate {
         self.view.endEditing(true)
     }
 
+    private func updateUndoRedoButtons() {
+        undoButton.isEnabled = self.textView.undoManager?.canUndo ?? false
+        redoButton.isEnabled = self.textView.undoManager?.canRedo ?? false
+    }
+
+    func textViewDidChange(_ textView: UITextView) {
+        updateUndoRedoButtons()
+    }
 }

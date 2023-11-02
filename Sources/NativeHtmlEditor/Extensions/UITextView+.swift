@@ -8,8 +8,7 @@
 import UIKit
 
 public extension UITextView {
-    func toggle(format: Format, manager: UndoManager, range: NSRange? = nil) {
-        let selectedRange = range ?? self.selectedRange
+    func toggle(format: Format, selectedRange: NSRange) {
         let key = format.key
         let current = typingAttributes[key]
         if format.hasAttribute(current)  {
@@ -20,13 +19,9 @@ public extension UITextView {
             typingAttributes += attributes
             textStorage.addAttributes(attributes, range: selectedRange)
         }
-
-        manager.registerUndo(withTarget: self) { tv in
-            tv.toggle(format: format, manager: manager, range: selectedRange)
-        }
     }
 
-    func toggle(trait: UIFontDescriptor.SymbolicTraits) {
+    func toggle(trait: UIFontDescriptor.SymbolicTraits, selectedRange: NSRange) {
         let typingFont = typingAttributes[.font] as? UIFont
         let font = typingFont ?? .preferredFont(forTextStyle: .body)
         var traits = font.fontDescriptor.symbolicTraits
