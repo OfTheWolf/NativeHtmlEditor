@@ -34,8 +34,8 @@ enum Mock {
         case .sample2:
            """
            <ul>
-               <li>Anywhere access through Desktop or mobile</li>
-               <li>Enhanced security measures</li>
+               <li>What would you like to drink?</li>
+               <li>Select one of below</li>
                <ol>
                  <li>Coffee</li>
                  <li>Tea</li>
@@ -44,7 +44,7 @@ enum Mock {
                    </ol>
                  <li>Milk</li>
                </ol>
-               <li>Enhanced security measures</li>
+               <li>Thanks!</li>
            </ul>
            """
         }
