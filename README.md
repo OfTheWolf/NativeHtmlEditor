@@ -25,7 +25,7 @@ An html editor that supports converting between NSAttributedString and html.
 
 # Usage
 
-```
+```swift
   let paragraphs = [Paragraph](self.textView.attributedText!)
   let htmlTreeBuilder = HTMLTreeBuilder()
   for item in paragraphs {
