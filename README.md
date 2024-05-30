@@ -23,3 +23,13 @@ An html editor that supports converting between NSAttributedString and html.
 - Strikethrough
 - List Items
 
+# Usage
+
+```
+  let paragraphs = [Paragraph](self.textView.attributedText!)
+  let htmlTreeBuilder = HTMLTreeBuilder()
+  for item in paragraphs {
+      item.accept(visitor: htmlTreeBuilder)
+  }
+  let html = htmlTreeBuilder.toHtml()
+```
