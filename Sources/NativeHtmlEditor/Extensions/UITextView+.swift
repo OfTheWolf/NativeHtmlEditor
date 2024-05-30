@@ -1,6 +1,6 @@
 //
-//  File.swift
-//  
+//  UITextView+.swift
+//  NativeHtmlEditor
 //
 //  Created by Ugur Bozkurt on 22/10/2023.
 //
