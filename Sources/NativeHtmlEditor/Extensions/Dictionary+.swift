@@ -1,6 +1,6 @@
 //
 //  Dictionary+.swift
-//  
+//  NativeHtmlEditor
 //
 //  Created by Ugur Bozkurt on 22/10/2023.
 //
@@ -11,6 +11,7 @@ extension Dictionary {
     static func +=(lhs: inout Self, rhs: Self) {
         lhs.merge(rhs) { _ , new in new }
     }
+    
     static func +=<S: Sequence>(lhs: inout Self, rhs: S) where S.Element == (Key, Value) {
         lhs.merge(rhs) { _ , new in new }
     }

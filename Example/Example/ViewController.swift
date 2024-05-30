@@ -13,21 +13,16 @@ class ViewController: UIViewController, UIToolbarDelegate, UITextViewDelegate {
     @IBOutlet weak var textView: UITextView!
     @IBOutlet weak var resultTextView: UITextView!
 
-    private let formatters: [NodeConverter] = [
-        BoldItalicConverter(),
-        UnderlineConverter(),
-        StrikethroughConverter(),
-        FontConverter()
-    ]
-
     override func viewDidLoad() {
         super.viewDidLoad()
         textView.inputAccessoryView = makeToolbar()
         textView.delegate = self
-        textView.attributedText = Mock.sample1.attributedString
-        navigationItem.rightBarButtonItem = .init(systemItem: .refresh, primaryAction: .init(handler: { _ in
-            self.textView.attributedText = Mock.sample1.attributedString
-        }))
+        textView.attributedText = Mock.sample2.attributedString
+        navigationItem.rightBarButtonItems = [
+            UIBarButtonItem(systemItem: .refresh, primaryAction: .init(handler: { [unowned self] _ in
+                self.textView.attributedText = Mock.sample1.attributedString
+            }))
+        ]
         updateUndoRedoButtons()
     }
 
@@ -107,7 +102,7 @@ class ViewController: UIViewController, UIToolbarDelegate, UITextViewDelegate {
 
     private lazy var underlineAction: UIAction = UIAction { _ in
         let selectedRange = self.textView.selectedRange
-        let format = UnderlineFormat()
+        let format = ListFormat()
         self.textView.toggle(format: format, selectedRange: selectedRange)
         self.textView.undoManager?.registerUndo(withTarget: self, handler: { _ in
             self.textView.selectedRange = selectedRange
@@ -128,15 +123,27 @@ class ViewController: UIViewController, UIToolbarDelegate, UITextViewDelegate {
     }
 
     private lazy var doneAction: UIAction = UIAction { _ in
-        let attributedText = NSMutableAttributedString.init(attributedString: self.textView.attributedText!)
-        let converter = AttributedStringToHtml(converters: self.formatters)
-        let html = converter.convert(attributedText: attributedText, isPretty: true)
+        let paragraphs = [Paragraph](self.textView.attributedText!)
+
+        let htmlTreeBuilder = HTMLTreeBuilder()
+        for item in paragraphs {
+            item.accept(visitor: htmlTreeBuilder)
+        }
+        let html = htmlTreeBuilder.toHtml()
+
         print("\n-------------")
         print(html)
         print("\n-------------")
 //        print(attributedText.toHtml())
         self.resultTextView.text = html
         self.view.endEditing(true)
+
+//        attributedText.enumerateAttributes(in: attributedText.fullRange) { attribute, range, _ in
+//            print("log:: line start")
+//            print(attributedText.attributedSubstring(from: range).string)
+//            print(attribute)
+//            print("log:: line end")
+//        }
     }
 
     private func updateUndoRedoButtons() {

@@ -8,7 +8,7 @@
 import Foundation
 
 enum Mock {
-    case sample1
+    case sample1, sample2, custom(String)
 
     var attributedString: NSAttributedString {
         let data = Mock.htmlTemplate(body).data(using: .utf16)!
@@ -17,8 +17,10 @@ enum Mock {
 
     var body: String {
         switch self {
+        case let .custom(text):
+            text
         case .sample1:
-            return """
+            """
                     <p><strong>Lorem Ipsum</strong> is <em>simply dummy text </em>of the <span style="text-decoration: underline;">printing</span> and <s>typesetting</s> industry. <s><span style="text-decoration: underline;"><em><strong>Lorem Ipsum</strong></em></span></s> has been the industry's standard dummy text ever since the 1500s,</p>
                     <p>Indent</p>
                     <p>Double Indent</p>
@@ -29,6 +31,22 @@ enum Mock {
                     <p>Lorem Ipsum passages, and more recently with desktop publishing software like&nbsp;</p>
                     <p>Aldus PageMaker including versions of Lorem Ipsum.<br>&nbsp;</p>
                 """
+        case .sample2:
+           """
+           <ul>
+               <li>Anywhere access through Desktop or mobile</li>
+               <li>Enhanced security measures</li>
+               <ol>
+                 <li>Coffee</li>
+                 <li>Tea</li>
+                   <ol>
+                     <li>Earl Grey</li>
+                   </ol>
+                 <li>Milk</li>
+               </ol>
+               <li>Enhanced security measures</li>
+           </ul>
+           """
         }
     }
 
