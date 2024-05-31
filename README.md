@@ -1,7 +1,6 @@
 # NativeHtmlEditor
 
-An html editor that supports converting between NSAttributedString and html.
-
+An HTML editor that converts `NSAttributedString` into HTML.
 
 | Editor View | Html Output |
 |:---:|:---:|
