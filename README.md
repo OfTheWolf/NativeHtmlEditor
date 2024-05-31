@@ -5,7 +5,7 @@ An html editor that supports converting between NSAttributedString and html.
 
 | Editor View | Html Output |
 |:---:|:---:|
-| <img src="editor.jpeg" width="300"/> |  <img src="html.jpeg" width="300"/> |
+| <img src="Example/Example/editor.jpg" width="300"/> |  <img src="Example/Example/html.jpg" width="300"/> |
 
 
 ## Editing Features:
