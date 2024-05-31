@@ -3,8 +3,10 @@
 An html editor that supports converting between NSAttributedString and html.
 
 
-| <img src="demo.gif" width="320" style="border:10 solid"/> |
-|-|
+| Editor View | Html Output |
+|:---:|:---:|
+| <img src="editor.jpeg" width="300"/> |  <img src="html.jpeg" width="300"/> |
+
 
 ## Editing Features:
 - Bold
