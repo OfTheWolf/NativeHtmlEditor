@@ -64,7 +64,7 @@ class ElementNode: Node, Equatable {
         case p, em, strong, div, span, a, del, ul, ol, li
     }
 
-    struct Attribute {
+    struct Attribute: Hashable {
         let key: Key
         let value: String
 

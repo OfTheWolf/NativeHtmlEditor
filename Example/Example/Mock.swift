@@ -8,7 +8,7 @@
 import Foundation
 
 enum Mock {
-    case sample1, sample2, custom(String)
+    case sample1, sample2, sample3, custom(String)
 
     var attributedString: NSAttributedString {
         let data = Mock.htmlTemplate(body).data(using: .utf16)!
@@ -45,6 +45,12 @@ enum Mock {
                  <li>Milk</li>
                </ol>
                <li>Thanks!</li>
+           </ul>
+           """
+        case .sample3:
+           """
+           <ul>
+               <li style="text-align: right">Hello <span style="text-decoration:underline">world<span></li>
            </ul>
            """
         }

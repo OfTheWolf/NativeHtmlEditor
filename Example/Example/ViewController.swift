@@ -17,7 +17,7 @@ class ViewController: UIViewController, UIToolbarDelegate, UITextViewDelegate {
         super.viewDidLoad()
         textView.inputAccessoryView = makeToolbar()
         textView.delegate = self
-        textView.attributedText = Mock.sample2.attributedString
+        textView.attributedText = Mock.sample3.attributedString
         navigationItem.rightBarButtonItems = [
             UIBarButtonItem(systemItem: .refresh, primaryAction: .init(handler: { [unowned self] _ in
                 self.textView.attributedText = Mock.sample1.attributedString

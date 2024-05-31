@@ -43,6 +43,7 @@ public class HTMLTreeBuilder: NodeVisitor {
             listState.reset()
             fallthrough
         case .ol, .ul:
+            children = [ElementNode(tag: .li, children: children)]
             if listState.level > listState.previousLevel {
                 let node = ElementNode(tag: currentTag, children: children)
                 root.append(node)

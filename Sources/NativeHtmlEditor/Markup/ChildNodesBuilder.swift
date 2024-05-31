@@ -37,7 +37,6 @@ class ChildNodesBuilder: MarkupVisitor {
             nodes = []
             return
         }
-        nodes = [ElementNode(tag: .li, children: nodes)]
         listState.increaseOffset()
     }
 

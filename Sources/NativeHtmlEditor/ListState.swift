@@ -50,7 +50,7 @@ class ListState {
 
     func shouldInclude(_ text: String) -> Bool {
         let text = text.trimmingCharacters(in: .whitespacesAndNewlines)
-        return text != marker
+        return !text.hasPrefix(marker)
     }
 
     func reset() {
