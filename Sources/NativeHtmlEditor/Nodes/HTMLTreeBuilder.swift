@@ -41,7 +41,7 @@ public class HTMLTreeBuilder: NodeVisitor {
         switch currentTag {
         case .p:
             listState.reset()
-            fallthrough
+            addChildren(children)
         case .ol, .ul:
             children = [ElementNode(tag: .li, children: children)]
             if listState.level > listState.previousLevel {
@@ -55,14 +55,18 @@ public class HTMLTreeBuilder: NodeVisitor {
                 fallthrough
             }
         default:
-            if root == nil || currentTag != root.tag || currentTag == .p {
-                root = ElementNode(tag: currentTag)
-                nodes.append(root)
-            }
-            root.append(children)
+            addChildren(children)
         }
         children = []
         listState.previousLevel = listState.level
+    }
+
+    private func addChildren(_ children: [Node]) {
+        if root == nil || currentTag != root.tag || currentTag == .p {
+            root = ElementNode(tag: currentTag)
+            nodes.append(root)
+        }
+        root.append(children)
     }
 
     public func visit(_ sub: Paragraph.Sub) {
