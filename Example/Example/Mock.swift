@@ -33,6 +33,8 @@ enum Mock {
                 """
         case .sample2:
            """
+           <p style="background-color: rgb(100, 200, 0)">Title</p>
+           <p style="color: rgb(200, 0, 0)">Subtitle</p>
            <ul>
                <li>What would you like to drink?</li>
                <li>Select one of below</li>

@@ -34,24 +34,36 @@ class ViewController: UIViewController, UIToolbarDelegate, UITextViewDelegate {
         UIBarButtonItem(image: UIImage(systemName: "arrow.uturn.right"), primaryAction: self.redoAction)
     }()
 
-    private func makeToolbar() -> UIToolbar {
-        let toolbar = UIToolbar()
-        toolbar.items = [
-//            UIBarButtonItem(image: UIImage(systemName: "text.alignleft"), primaryAction: leftAlignAction),
-//            UIBarButtonItem(image: UIImage(systemName: "text.aligncenter"), primaryAction: centerAlignAction),
-//            UIBarButtonItem(image: UIImage(systemName: "text.alignright"), primaryAction: rightAlignAction),
-//            UIBarButtonItem(image: UIImage(systemName: "text.justify"), primaryAction: justifyAction),
+    private func makeToolbar() -> UIStackView {
+        let topToolbar = UIToolbar()
+        topToolbar.items = [
             UIBarButtonItem(image: UIImage(systemName: "bold"), primaryAction: boldAction),
             UIBarButtonItem(image: UIImage(systemName: "italic"), primaryAction: italicAction),
             UIBarButtonItem(image: UIImage(systemName: "underline"), primaryAction: underlineAction),
             UIBarButtonItem(image: UIImage(systemName: "strikethrough"), primaryAction: strikeThroughAction),
+            UIBarButtonItem(image: UIImage(systemName: "text.alignleft"), primaryAction: leftAlignAction),
+            UIBarButtonItem(image: UIImage(systemName: "text.aligncenter"), primaryAction: centerAlignAction),
+            UIBarButtonItem(image: UIImage(systemName: "text.alignright"), primaryAction: rightAlignAction),
+            UIBarButtonItem(image: UIImage(systemName: "text.justify"), primaryAction: justifyAction),
+            UIBarButtonItem(image: UIImage(systemName: "paintpalette"), primaryAction: foregroundColorAction),
+            UIBarButtonItem(image: UIImage(systemName: "paintpalette.fill"), primaryAction: backgroundColorAction),
+        ]
+        topToolbar.sizeToFit()
+
+        let bottomToolbar = UIToolbar()
+        bottomToolbar.items = [
             undoButton,
             redoButton,
             .flexibleSpace(),
             UIBarButtonItem(systemItem: .done, primaryAction: doneAction)
         ]
-        toolbar.sizeToFit()
-        return toolbar
+
+        let stackView = UIStackView(frame: .init(x: 0, y: 0, width: view.frame.width, height: topToolbar.frame.height*2))
+        stackView.axis = .vertical
+        stackView.distribution = .fillEqually
+        stackView.addArrangedSubview(topToolbar)
+        stackView.addArrangedSubview(bottomToolbar)
+        return stackView
     }
 
     private lazy var undoAction: UIAction = UIAction { _ in
@@ -64,20 +76,35 @@ class ViewController: UIViewController, UIToolbarDelegate, UITextViewDelegate {
         self.updateUndoRedoButtons()
     }
 
-    private lazy var leftAlignAction: UIAction = UIAction { _ in
-
+    private lazy var leftAlignAction: UIAction = UIAction { [unowned self] _ in
+        alignAction(for: .left)
     }
 
-    private lazy var rightAlignAction: UIAction = UIAction { _ in
-
+    private lazy var rightAlignAction: UIAction = UIAction {[unowned self] _ in
+        alignAction(for: .right)
     }
 
-    private lazy var centerAlignAction: UIAction = UIAction { _ in
-
+    private lazy var centerAlignAction: UIAction = UIAction {[unowned self] _ in
+        alignAction(for: .center)
     }
 
-    private lazy var justifyAction: UIAction = UIAction { _ in
+    private lazy var justifyAction: UIAction = UIAction {[unowned self] _ in
+        alignAction(for: .justified)
+    }
 
+    private func alignAction(for alignment: NSTextAlignment) {
+        let selectedRange = self.textView.selectedRange
+        let text = self.textView.text as NSString
+        let paragraphRange = text.paragraphRange(for: self.textView.selectedRange)
+        let mutableStyle = self.textView.typingAttributes[.paragraphStyle] as? NSMutableParagraphStyle
+        guard let mutableStyle else { return }
+        let format = TextAlignFormat(alignmet: alignment, currentParagraphStyle: mutableStyle)
+        self.textView.toggle(paragraphFormat: format, selectedRange: paragraphRange)
+        self.textView.undoManager?.registerUndo(withTarget: self, handler: { _ in
+            self.textView.selectedRange = selectedRange
+            self.textView.toggle(paragraphFormat: format, selectedRange: selectedRange)
+        })
+        self.updateUndoRedoButtons()
     }
 
     private lazy var boldAction: UIAction = UIAction { _ in
@@ -102,7 +129,7 @@ class ViewController: UIViewController, UIToolbarDelegate, UITextViewDelegate {
 
     private lazy var underlineAction: UIAction = UIAction { _ in
         let selectedRange = self.textView.selectedRange
-        let format = ListFormat()
+        let format = UnderlineFormat()
         self.textView.toggle(format: format, selectedRange: selectedRange)
         self.textView.undoManager?.registerUndo(withTarget: self, handler: { _ in
             self.textView.selectedRange = selectedRange
@@ -114,6 +141,28 @@ class ViewController: UIViewController, UIToolbarDelegate, UITextViewDelegate {
     private lazy var strikeThroughAction: UIAction = UIAction { _ in
         let selectedRange = self.textView.selectedRange
         let format = StrikethroughFormat()
+        self.textView.toggle(format: format, selectedRange: selectedRange)
+        self.textView.undoManager?.registerUndo(withTarget: self, handler: { _ in
+            self.textView.selectedRange = selectedRange
+            self.textView.toggle(format: format, selectedRange: selectedRange)
+        })
+        self.updateUndoRedoButtons()
+    }
+
+    private lazy var foregroundColorAction: UIAction = UIAction { _ in
+        let selectedRange = self.textView.selectedRange
+        let format = ForegroundColorFormat(color: .systemPink)
+        self.textView.toggle(format: format, selectedRange: selectedRange)
+        self.textView.undoManager?.registerUndo(withTarget: self, handler: { _ in
+            self.textView.selectedRange = selectedRange
+            self.textView.toggle(format: format, selectedRange: selectedRange)
+        })
+        self.updateUndoRedoButtons()
+    }
+
+    private lazy var backgroundColorAction: UIAction = UIAction { _ in
+        let selectedRange = self.textView.selectedRange
+        let format = BackgroundColorFormat(color: .yellow)
         self.textView.toggle(format: format, selectedRange: selectedRange)
         self.textView.undoManager?.registerUndo(withTarget: self, handler: { _ in
             self.textView.selectedRange = selectedRange
@@ -155,3 +204,54 @@ class ViewController: UIViewController, UIToolbarDelegate, UITextViewDelegate {
         updateUndoRedoButtons()
     }
 }
+
+//@available(iOS 17.0, *)
+//#Preview {
+//    let size = UIScreen.main.bounds.size
+//    let frame = CGRect(x: 20, y: 80, width: size.width-40, height: 200)
+//    let view = UIView(frame: .zero)
+//    let tv = UITextView(frame: frame)
+//    view.addSubview(tv)
+//    view.layer.borderColor = UIColor.label.cgColor
+//    view.layer.borderWidth = 1
+//    view.backgroundColor = .yellow
+//    tv.backgroundColor = .secondarySystemGroupedBackground
+//
+//    let result = UITextView(frame: .init(x: 20, y: frame.maxY+12, width: frame.width, height: 200))
+//    view.addSubview(result)
+//
+//    let html = """
+//<p><strong>Title</strong></p>
+//<ul>
+//<li>item 1</li>
+//<li>item 2</li>
+//<li>item 3</li>
+//</ul>
+//&nbsp
+//<p>The end</p>
+//"""
+//
+//
+//    class Delegate: NSObject, UITextViewDelegate {
+//
+//        func textViewDidChange(_ textView: UITextView) {
+//            print
+//        }
+//    }
+//
+//    let attributedString = try! NSAttributedString(
+//        data: html.data(using: .utf8)!,
+//        options: [.documentType: NSAttributedString.DocumentType.html, .characterEncoding: String.Encoding.utf8.rawValue],
+//        documentAttributes: nil
+//    )
+//    tv.delegate =
+////    attributedString.enumerateAttributes(in: attributedString.fullRange) { attr, range, _ in
+////        let ps = attr[.paragraphStyle] as! NSMutableParagraphStyle
+////        let str = attributedString.attributedSubstring(from: range).string
+////        print(str.map(\.description))
+////    }
+//    let ps = tv.typingAttributes[.paragraphStyle] as? NSMutableParagraphStyle
+//    print(ps?.textLists)
+//    tv.attributedText = attributedString
+//    return view
+//}

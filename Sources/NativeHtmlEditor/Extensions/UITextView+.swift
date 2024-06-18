@@ -8,6 +8,22 @@
 import UIKit
 
 public extension UITextView {
+
+    func toggle(paragraphFormat: Format, selectedRange: NSRange) {
+        let key = paragraphFormat.key
+        let current = typingAttributes[key] as! NSMutableParagraphStyle
+        if paragraphFormat.hasAttribute(current)  {
+            current.alignment = .natural
+            typingAttributes[key] = current
+            textStorage.removeAttribute(key, range: selectedRange)
+            textStorage.addAttributes([key: current], range: selectedRange)
+        } else {
+            let attributes = paragraphFormat.attributes
+            typingAttributes += attributes
+            textStorage.addAttributes(attributes, range: selectedRange)
+        }
+    }
+
     func toggle(format: Format, selectedRange: NSRange) {
         let key = format.key
         let current = typingAttributes[key]
