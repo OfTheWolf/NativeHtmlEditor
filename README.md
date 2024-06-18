@@ -12,16 +12,19 @@ An HTML editor that converts `NSAttributedString` into HTML.
 - Italic
 - Underlined
 - Strikethrough
-
+- Text color
+- Text background color
+- Text alignment
+ 
 ## Html Converter Features:
 - Bold
 - Italic
 - Underlined
+- Strikethrough
 - Link
 - Text color
 - Text background color
 - Text alignment
-- Strikethrough
 - List Items
 
 # Usage
