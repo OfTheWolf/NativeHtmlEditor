@@ -17,7 +17,7 @@ class ViewController: UIViewController, UIToolbarDelegate, UITextViewDelegate {
         super.viewDidLoad()
         textView.inputAccessoryView = makeToolbar()
         textView.delegate = self
-        textView.attributedText = Mock.sample2.attributedString
+        textView.attributedText = Mock.sample1.attributedString
         navigationItem.rightBarButtonItems = [
             UIBarButtonItem(systemItem: .refresh, primaryAction: .init(handler: { [unowned self] _ in
                 self.textView.attributedText = Mock.sample1.attributedString
@@ -47,6 +47,7 @@ class ViewController: UIViewController, UIToolbarDelegate, UITextViewDelegate {
             UIBarButtonItem(image: UIImage(systemName: "text.justify"), primaryAction: justifyAction),
             UIBarButtonItem(image: UIImage(systemName: "paintpalette"), primaryAction: foregroundColorAction),
             UIBarButtonItem(image: UIImage(systemName: "paintpalette.fill"), primaryAction: backgroundColorAction),
+            UIBarButtonItem(image: UIImage(systemName: "list.bullet"), primaryAction: listAction),
         ]
         topToolbar.sizeToFit()
 
@@ -99,6 +100,21 @@ class ViewController: UIViewController, UIToolbarDelegate, UITextViewDelegate {
         let mutableStyle = self.textView.typingAttributes[.paragraphStyle] as? NSMutableParagraphStyle
         guard let mutableStyle else { return }
         let format = TextAlignFormat(alignmet: alignment, currentParagraphStyle: mutableStyle)
+        self.textView.toggle(paragraphFormat: format, selectedRange: paragraphRange)
+        self.textView.undoManager?.registerUndo(withTarget: self, handler: { _ in
+            self.textView.selectedRange = selectedRange
+            self.textView.toggle(paragraphFormat: format, selectedRange: selectedRange)
+        })
+        self.updateUndoRedoButtons()
+    }
+
+    private lazy var listAction: UIAction = UIAction {[unowned self] _ in
+        let selectedRange = self.textView.selectedRange
+        let text = self.textView.text as NSString
+        let paragraphRange = text.paragraphRange(for: self.textView.selectedRange)
+        let mutableStyle = self.textView.typingAttributes[.paragraphStyle] as? NSMutableParagraphStyle
+        guard let mutableStyle else { return }
+        let format = ListFormat(currentParagraphStyle: mutableStyle)
         self.textView.toggle(paragraphFormat: format, selectedRange: paragraphRange)
         self.textView.undoManager?.registerUndo(withTarget: self, handler: { _ in
             self.textView.selectedRange = selectedRange

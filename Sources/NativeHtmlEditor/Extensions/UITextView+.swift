@@ -9,14 +9,14 @@ import UIKit
 
 public extension UITextView {
 
-    func toggle(paragraphFormat: Format, selectedRange: NSRange) {
+    func toggle(paragraphFormat: ParagraphFormat, selectedRange: NSRange) {
         let key = paragraphFormat.key
         let current = typingAttributes[key] as! NSMutableParagraphStyle
         if paragraphFormat.hasAttribute(current)  {
-            current.alignment = .natural
-            typingAttributes[key] = current
+            let defaultParagraphStyle = paragraphFormat.defaultParagraphStyle
+            typingAttributes[key] = defaultParagraphStyle
             textStorage.removeAttribute(key, range: selectedRange)
-            textStorage.addAttributes([key: current], range: selectedRange)
+            textStorage.addAttribute(key, value: defaultParagraphStyle, range: selectedRange)
         } else {
             let attributes = paragraphFormat.attributes
             typingAttributes += attributes
